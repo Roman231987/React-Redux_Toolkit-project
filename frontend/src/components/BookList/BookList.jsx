@@ -4,6 +4,7 @@ import { deleteBook, toggleFavorite } from "../../redux/books/actionCreators";
 import {
   selectTitleFilter,
   selectAuthorFilter,
+  selectOnlyFavoriteFilter,
 } from "../../redux/slices/filterSlice";
 import "./BookList.css";
 
@@ -11,6 +12,7 @@ const BookList = () => {
   const books = useSelector((state) => state.books);
   const titleFilter = useSelector(selectTitleFilter);
   const authorFilter = useSelector(selectAuthorFilter);
+  const onlyFavoriteFilter = useSelector(selectOnlyFavoriteFilter);
   const dispatch = useDispatch();
 
   const handelDeleteBook = (id) => {
@@ -29,10 +31,10 @@ const BookList = () => {
     const matchesAuthor = book.author
       .toLowerCase()
       .includes(authorFilter.toLowerCase());
-    return matchesTitle && matchesAuthor;
-  });
 
-  console.log(filteredBooks);
+    const matchesFavorite = onlyFavoriteFilter ? book.isFavorite : true;
+    return matchesTitle && matchesAuthor && matchesFavorite;
+  });
 
   return (
     <div className="app-block book-list">
@@ -46,7 +48,6 @@ const BookList = () => {
               <div className="book-info">
                 {++i}. {book.title} by <strong> {book.author} </strong>
               </div>
-
               <span onClick={() => handleToggleFavorite(book.id)}>
                 {book.isFavorite ? (
                   <BsBookmarkStarFill className="star-icon" />
@@ -54,7 +55,6 @@ const BookList = () => {
                   <BsBookmarkStar className="star-icon" />
                 )}
               </span>
-
               <div className="book-actions">
                 <button onClick={() => handelDeleteBook(book.id)}>
                   Delete
